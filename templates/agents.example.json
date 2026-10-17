@@ -1,0 +1,19 @@
+{
+  "_comment": "Per-project agent roster for core/dispatch.sh. 'notify' is how a card reaches the agent — any shell template with {agent} {card_id} {title} {priority} {body} placeholders. 'alive' is an optional liveness probe; the agent is skipped while it fails.",
+  "agents": [
+    {
+      "name": "engineer",
+      "notify": "/path/to/notify-hook.sh {agent} {card_id} {title} {priority}",
+      "alive": "pgrep -f 'goose.*engineer' > /dev/null && echo ok"
+    },
+    {
+      "name": "scribe",
+      "notify": "/path/to/notify-hook.sh {agent} {card_id} {title} {priority}"
+    },
+    {
+      "name": "reviewer",
+      "roles": ["any", "reviewer", "qa"],
+      "notify": "curl -s -X POST https://example.internal/hooks/reviewer -d '{\"card\":\"{card_id}\",\"agent\":\"{agent}\"}'"
+    }
+  ]
+}

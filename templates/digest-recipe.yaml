@@ -1,0 +1,40 @@
+version: 1.0.0
+title: "{PROJECT} morning digest"
+description: >
+  Daily morning report folding the previous day's activity into one page:
+  task-board deltas, chat/channel activity, ledger changes, CI runs, costs,
+  and upstream tool drift. Posted to the team's chat and filed to memory.
+instructions: |
+  You are a scheduled digest job. Follow the prompt exactly. Be brief and factual.
+  Use absolute paths — do not assume a working directory. Read-only except for
+  the two write steps the prompt names.
+prompt: |
+  DATE: run `date "+%Y-%m-%d"`. Window = last 24h (since the previous digest
+  cursor file, if present).
+
+  SOURCES (skip any that don't apply to this project):
+  1. BOARD DELTAS: `curl -s "$AGENTOS_BOARD_URL/board.json?done_days=all"` —
+     cards done/failed/blocked/created since the cursor; note cards still in
+     backlog older than a week.
+  2. TEAM CHAT: read messages since the cursor from your team channel(s)
+     (tool of your choice: buzz/Slack/MCP chat; grep for what ACTED, don't
+     summarize everything).
+  3. LEDGER: `git -C <repo> log --oneline --since=... -- specs/ tasks/`
+     (or your project's ledger location).
+  4. CI: last 24h of pipeline runs for the project's repos (gh or equivalent).
+  5. COSTS: your LLM spend source for the window (proxy stats, provider
+     dashboard).
+  6. UPSTREAM DRIFT: for each tool you vendor or track (e.g. `git fetch
+     origin` in a vendored repo), report behind-by count + last upstream
+     commit date. Updates stay owner-gated; this line only measures the gap.
+
+  OUTPUT (exactly two writes):
+  A) File one durable copy: a memory/doc entry named `{PREFIX}/digests/{DATE}`
+     with the sections above.
+  B) Post ONE short summary (max ~12 lines) to the team's main channel as the
+     owner/digest identity, including: verdict line (ON TRACK / NEEDS
+     ATTENTION + the specific item), cards done/blocked, escalations needing
+     the owner, and the drift line.
+
+  CURSOR: update `.agentos/last-digest` (ISO timestamp) so the next run's
+  window is exact. This is an authorized write.
