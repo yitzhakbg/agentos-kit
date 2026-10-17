@@ -74,6 +74,12 @@ webhook, an email, a job queue — or nothing at all (you and the board are
 already enough for a solo setup). The pattern is: transport is pluggable;
 the board, the memory protocol, and the digest don't change.
 
+## Demo (45s)
+
+**[▶ Watch the demo](docs/media/demo.mp4)** — the full loop in six beats:
+drop a card → agents claim in parallel → receipts → shared memory → the
+morning digest. (GitHub plays the linked MP4 inline; or download and open it.)
+
 ## What is in the kit
 
 | Path | What it is |
