@@ -2,19 +2,49 @@
 
 **Run your AI agents as one operating system, not a pile of tabs.**
 
-`agentos-kit` is a small, project-agnostic kit that implements the three
-primitives every "agent OS" needs, distilled from running a production
-7-agent goose team:
+## The problem it solves
 
-1. **One task board** — SQLite + a tiny HTTP API (this repo's `core/`).
-   You drop cards; agents claim and complete them **in parallel**; every
-   card leaves a receipt (summary + artifacts).
-2. **One shared-memory protocol** — a two-trigger discipline (read once
-   before a task, write one structured page after) that works with any
-   memory backend: an MCP memory server, a vector store, or plain
-   markdown files.
-3. **One daily digest** — a scheduled recipe that folds board deltas,
-   chat activity, CI runs, and costs into a single morning report.
+If you run more than one AI agent, you already know the failure modes:
+
+- **Every agent is an island.** One lives in a chat window, another in a
+  terminal, a third in a scheduler. None of them can see what the others
+  are doing — so work gets duplicated, or silently dropped.
+- **You are the coordination layer.** Somebody has to type "now do X" into
+  each window, remember who was assigned what, and notice when an agent
+  finished. That somebody is you, in every session, again.
+- **Context doesn't transfer.** Agent B rediscovers — worse — what agent A
+  already learned yesterday, because what A learned is buried in a chat
+  scrollback nobody will ever read.
+- **Status lives nowhere.** "What happened overnight?" has no answer you
+  can look up; you reconstruct it from scrollback, git log, and memory.
+- **Stuck agents are silent.** An agent that hit a blocker just sits there.
+  You find out when you go looking — or when the deadline does.
+
+These are not tooling problems. They are *operating-system* problems —
+work assignment, shared memory, status reporting — and they only exist
+once you have several agents, which is why single-agent frameworks
+don't solve them.
+
+## What agentos-kit is
+
+`agentos-kit` is a small, project-agnostic kit that gives your agents those
+three operating-system primitives. It is deliberately boring technology:
+a SQLite database, a tiny HTTP API, a CLI, and two short protocol blocks
+you paste into your agents' instructions. There is nothing to deploy beyond
+one Python process, and nothing to learn beyond four CLI verbs.
+
+1. **One task board** — work becomes *cards* in a SQLite database behind a
+   tiny HTTP API (`core/`). You (or a script) drop cards; agents claim them
+   and work **in parallel**; every completion leaves a **receipt** — a
+   summary plus artifacts — so finished work is auditable after the fact.
+2. **One shared-memory protocol** — a two-trigger discipline: each agent
+   *reads* the relevant memory once before starting a task, and *writes*
+   one structured page when it finishes. What one agent learns, the next
+   one starts from. It works with any backend you already have: an MCP
+   memory server, a vector store, or plain markdown files.
+3. **One daily digest** — a scheduled recipe that folds board deltas, chat
+   activity, CI runs, and costs into a single morning report, so "what
+   happened?" is one page instead of ten tabs.
 
 ```
                 you (the owner)
@@ -34,6 +64,11 @@ primitives every "agent OS" needs, distilled from running a production
                  v
         transport-free core — buzz is one adapter, plug your own
 ```
+
+A day with the kit, in one line: cards go in, agents claim and work in
+parallel, receipts land in Done, memory compounds, and the morning digest
+tells you what happened — so your time goes to reviewing and approving,
+not herding windows.
 
 ## goose and Buzz — the two building blocks
 
@@ -74,11 +109,13 @@ webhook, an email, a job queue — or nothing at all (you and the board are
 already enough for a solo setup). The pattern is: transport is pluggable;
 the board, the memory protocol, and the digest don't change.
 
-## Demo (45s)
+## Demo (76s)
 
-**[▶ Watch the demo](docs/media/demo.mp4)** — the full loop in six beats:
-drop a card → agents claim in parallel → receipts → shared memory → the
-morning digest. (GitHub plays the linked MP4 inline; or download and open it.)
+**[▶ Watch the demo](docs/media/demo.mp4)** — it opens on the problem
+(agents as a pile of tabs), then walks the full loop in six beats: drop a
+card → agents claim in parallel → receipts → shared memory → the morning
+digest. Narrated; describes what you're seeing as you see it. (GitHub plays
+the linked MP4 inline; or download and open it.)
 
 ## What is in the kit
 
