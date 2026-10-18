@@ -111,11 +111,10 @@ the board, the memory protocol, and the digest don't change.
 
 ## Demo (76s)
 
-**[▶ Watch the demo](docs/media/demo.mp4)** — it opens on the problem
+**[▶ Watch the demo](https://youtu.be/Ciz9x5Ci6es)** — it opens on the problem
 (agents as a pile of tabs), then walks the full loop in six beats: drop a
 card → agents claim in parallel → receipts → shared memory → the morning
-digest. Narrated; describes what you're seeing as you see it. (GitHub plays
-the linked MP4 inline; or download and open it.)
+digest. Narrated; describes what you're seeing as you see it.
 
 ## What is in the kit
 
